@@ -292,7 +292,7 @@ function setup() {
 
   // Initialize reset button
   resetButton = createButton("Reset");
-  resetButton.position(400, height * 0.05);
+  resetButton.position(400, 850);
   resetButton.mousePressed(resetSketch);
   resetButton.hide(); 
 }
