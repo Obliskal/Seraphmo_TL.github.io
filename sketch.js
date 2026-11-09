@@ -5,6 +5,7 @@ let backgroundImages = [];
 let selectionRange = -2000; // Adjust this value to control the selection range
 let gameStarted = false; // Variable to track whether the game has started
 let playButton;
+let resetButton;
 let startscreenImage;
 let canvas;
 let nonInteractiveImages = [];
@@ -291,8 +292,9 @@ function setup() {
 
   // Initialize reset button
   resetButton = createButton("Reset");
-  resetButton.position(400, 550);
+  resetButton.position(400, height * 0.05);
   resetButton.mousePressed(resetSketch);
+  resetButton.hide(); 
 }
 
 // ... (your preload function remains unchanged)
@@ -493,6 +495,7 @@ function startGame() {
 
   // Remove play button
   playButton.remove();
+  resetButton.show();
 
   // Display the first seven images from the shuffled array
   for (let i = 0; i < min(7, nonInteractiveImages.length); i++) {
