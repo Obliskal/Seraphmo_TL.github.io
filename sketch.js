@@ -571,6 +571,11 @@ function startGame() {
   playButton.remove();
   resetButton.show();
 
+  // trigger the Ad3 popup
+  if (typeof showAd3Popup === "function") {
+    showAd3Popup();
+  }
+
   // Display the first seven images from the shuffled array
   for (let i = 0; i < min(7, nonInteractiveImages.length); i++) {
     let x = random(width);
