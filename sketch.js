@@ -319,6 +319,11 @@ class Draggable {
     this.dragging = false;
     this.referenceX = 0; // Reference point X
     this.referenceY = 0; // Reference point Y
+
+    this.vx = 0;
+    this.vy = 0;
+    this.dragTime = 0;
+    this.activated = false;
   }
 
   inSelectionRange() {
@@ -349,15 +354,69 @@ class Draggable {
         mouseY < bottomEdge
       );
     }
-
     // If the game hasn't started, allow other elements to handle mouse events
     return false;
   }
 
   update() {
     if (this.dragging) {
-      this.x = mouseX - this.referenceX;
-      this.y = mouseY - this.referenceY;
+      this.dragTime++;
+
+      var t = Math.min(1, this.dragTime / 450);
+
+      let targetX = mouseX - this.referenceX;
+      let targetY = mouseY - this.referenceY;
+
+      let shiftX = Math.sin(frameCount * 0.25 + this.x * 0.05) * (90 * t);
+      let shiftY = Math.cos(frameCount * 0.3 + this.y * 0.05) * (90 * t);
+
+      this.x = lerp(targetX, this.x + shiftX, t);
+      this.y = lerp(targetY, this.y + shiftY, t);
+
+      if (t >= 1) {
+        this.dragging = false;
+        let bounceAngle = Math.atan2(this.y - mouseY, this.x - mouseX) + random(-0.6, 0.6);
+        this.vx = Math.cos(bounceAngle) * random(5, 9);
+        this.vy = Math.sin(bounceAngle) * random(5, 9);
+      }
+    } else if (this.activated) {
+      let dx = this.x - mouseX;
+      let dy = this.y - mouseY;
+      let distToMouse = Math.hypot(dx, dy);
+
+      if (distToMouse < 100 && distToMouse > 0) {
+        var t = Math.min(1, (100 - distToMouse) / 100);
+        this.vx += (dx / distToMouse) * t * 1.5;
+        this.vy += (dy / distToMouse) * t * 1.5;
+      }
+      let speed = Math.hypot(this.vx, this.vy);
+      if (speed > 10) {
+        this.vx = (this.vx / speed) * 10;
+        this.vy = (this.vy / speed) * 10;
+      }
+      this.x += this.vx;
+      this.y += this.vy;
+
+      this.vx *= 0.992;
+      this.vy *= 0.992;
+
+      let halfW = this.width / 2;
+      let halfH = this.height / 2;
+      if (this.x < halfW) {
+        this.x = halfW;
+        this.vx *= -1;
+      } else if (this.x > width - halfW) {
+        this.x = width - halfW;
+        this.vx *= -1;
+      }
+      
+      if (this.y < halfH) {
+        this.y = halfH;
+        this.vy *= -1;
+      } else if (this.y > height - halfH) {
+        this.y = height - halfH;
+        this.vy *= -1;
+      }
     }
   }
 
@@ -372,6 +431,12 @@ class Draggable {
       this.referenceX = mouseX - this.x;
       this.referenceY = mouseY - this.y;
       this.dragging = true;
+      this.activated = true;
+      this.dragTime = 0;
+
+      let angle = Math.atan2(this.y - mouseY, this.x - mouseX) + random(-0.8, 0.8);
+      this.vx = Math.cos(angle) * random(3, 6);
+      this.vy = Math.sin(angle) * random(3, 6);
     }
   }
 
