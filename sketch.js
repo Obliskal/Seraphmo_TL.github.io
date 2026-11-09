@@ -320,6 +320,7 @@ class Draggable {
     this.referenceX = 0; // Reference point X
     this.referenceY = 0; // Reference point Y
 
+    // new variables for bounce
     this.vx = 0;
     this.vy = 0;
     this.dragTime = 0;
@@ -362,17 +363,21 @@ class Draggable {
     if (this.dragging) {
       this.dragTime++;
 
+
+      // bounce speed
       var t = Math.min(1, this.dragTime / 450);
 
       let targetX = mouseX - this.referenceX;
       let targetY = mouseY - this.referenceY;
 
+      // jitter
       let shiftX = Math.sin(frameCount * 0.25 + this.x * 0.05) * (90 * t);
       let shiftY = Math.cos(frameCount * 0.3 + this.y * 0.05) * (90 * t);
 
       this.x = lerp(targetX, this.x + shiftX, t);
       this.y = lerp(targetY, this.y + shiftY, t);
 
+      // launch
       if (t >= 1) {
         this.dragging = false;
         let bounceAngle = Math.atan2(this.y - mouseY, this.x - mouseX) + random(-0.6, 0.6);
@@ -380,6 +385,7 @@ class Draggable {
         this.vy = Math.sin(bounceAngle) * random(5, 9);
       }
     } else if (this.activated) {
+      // bounce away from hover
       let dx = this.x - mouseX;
       let dy = this.y - mouseY;
       let distToMouse = Math.hypot(dx, dy);
@@ -389,11 +395,14 @@ class Draggable {
         this.vx += (dx / distToMouse) * t * 1.5;
         this.vy += (dy / distToMouse) * t * 1.5;
       }
+
+      // cap max speed
       let speed = Math.hypot(this.vx, this.vy);
       if (speed > 10) {
         this.vx = (this.vx / speed) * 10;
         this.vy = (this.vy / speed) * 10;
       }
+
       this.x += this.vx;
       this.y += this.vy;
 
