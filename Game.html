@@ -8,33 +8,24 @@ h1, p {
 
 /* ads popup */
 #ad3-popup {
-    dusplay: none;
+    display: none;
     position: fixed;
     top: 50%;
-    leftL: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000;
-    border: 3px solid #000;
-    background: #fff;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    border: none;
+    padding: 0;
+    pointer-events: none;
 }
+        
 #ad3-popup img {
     display: block;
-    max-width: 420px;
+    width: auto;
+    max-width: 320px;
     height: auto;
+    margin: 0;
 }
-#close-ad-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: #ff0055;
-    color: white;
-    border: 2px solid black;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 2px 8px;
-}   
-
 #haunted-bg {
     display: none;
     position: fixed;
@@ -45,12 +36,10 @@ h1, p {
     background-image: url("Ad3.png");
     background-size: cover;
     background-position: center;
-    opacity: 0.5; 
-    pointer-events: none; 
-    z-index: 900;
+    opacity: 0.15; 
+    pointer-events: none;
+    z-index: -1; 
 }
-
-
 </style>
 <link rel="stylesheet" href="style.css"/>
 
@@ -67,23 +56,47 @@ h1, p {
 
     <!-- Pop up ad -->
     <div id="ad3-popup">
-    <button id="close-ad-btn" onclick="closeAd3()">X</button>
     <img src="Ad3.png" alt="Ad"/>
     </div>
 
     <div id="haunted-bg"></div>
 
     <script>
+        let ad3IsOpen = false;
+        
         function showAd3Popup() {
-         document.getElementById("ad3-popup").style.display = "block";   
+            const popup = document.getElementById("ad3-popup");
+            const canvas = document.querySelector("canvas");
+            
+        if (canvas) {
+            const rect = canvas.getBoundingClientRect();
+            popup.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
+            popup.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
+        } else {
+            popup.style.left = "50%";
+            popup.style.top = "50%";
         }
-        function closeAd3() {
-         document.getElementById("ad3-popup").style.display = "none";
+            
+        popup.style.display = "block";
 
-         setTimeout(function() {
-          document.getElementById("haunted-bg").style.display = "block";
-          }, 5000);
-         }
+        setTimeout(function() {
+            ad3IsOpen = true;
+            if (canvas) {
+            canvas.addEventListener("mousedown", closeAd3OnGameClick, { once: true });
+          }
+        }, 150);
+      }
+    
+        function closeAd3OnGameClick() {
+            if (!ad3IsOpen) return;
+            ad3IsOpen = false;
+
+        document.getElementById("ad3-popup").style.display = "none";
+
+        setTimeout(function() {
+            document.getElementById("haunted-bg").style.display = "block";
+        }, 5000);
+    }    
     </script>    
     </body>
 </html>
